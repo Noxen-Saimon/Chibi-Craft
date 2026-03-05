@@ -109,6 +109,7 @@
 
       const waNumber = "6285946267618";
       const instagramUrl = "https://www.instagram.com/chibi_craft.id?igsh=ajByZnkzeXd4dG45";
+      const contactEmail = "lumsweetdrink@gmail.com";
 
       const favoriteProducts = [
         {
@@ -139,7 +140,8 @@
 
       function App() {
         const [dark, setDark] = useState(localStorage.getItem("theme") === "dark");
-        const [form, setForm] = useState({ name: "", email: "", message: "" });
+        const [contactName, setContactName] = useState("");
+        const [contactNote, setContactNote] = useState("");
 
         useEffect(() => {
           document.documentElement.classList.toggle("dark", dark);
@@ -166,21 +168,21 @@
         const limitedMsg = encodeURIComponent(`Halo saya ingin pesan ${limitedEdition.name} (PO bulan ini)`);
         const limitedWaLink = `https://wa.me/${waNumber}?text=${limitedMsg}`;
 
-        const onSubmit = (e) => {
+        const handleSendToGmail = (e) => {
           e.preventDefault();
-          if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
-            alert("Semua field wajib diisi.");
-            return;
-          }
 
-          const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-          if (!emailOk) {
-            alert("Format email tidak valid.");
-            return;
-          }
+          const safeName = contactName.trim() || "Customer Chibi Craft";
+          const safeNote = contactNote.trim();
 
-          alert("Terima kasih! Pesan kamu sudah terkirim.");
-          setForm({ name: "", email: "", message: "" });
+          if (!safeNote) return;
+
+          const subject = `Note untuk Chibi Craft dari ${safeName}`;
+          const body = `Nama: ${safeName}\n\nNote:\n${safeNote}`;
+          const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+            contactEmail
+          )}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+          window.open(gmailComposeUrl, "_blank", "noopener,noreferrer");
         };
 
         return (
@@ -199,14 +201,14 @@
                   <a href="#produk" className="rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-slate-800 md:text-sm">
                     Produk
                   </a>
-                  <a href="#kontak" className="rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-slate-800 md:text-sm">
-                    Kontak
-                  </a>
                   <a
                     href="#instagram"
                     className="rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-slate-800 md:text-sm"
                   >
                     Instagram
+                  </a>
+                  <a href="#hubungi" className="rounded-full px-3 py-1.5 text-xs font-semibold hover:bg-pink-100 dark:hover:bg-slate-800 md:text-sm">
+                    Hubungi
                   </a>
                   <button
                     onClick={() => setDark((v) => !v)}
@@ -379,42 +381,56 @@
                 </div>
               </section>
 
-              <section id="kontak" className="mx-auto max-w-4xl px-4 py-16 md:px-6">
-                <div className="fade-item rounded-[2rem] border border-white/80 bg-white/80 p-6 shadow-lg dark:border-slate-700 dark:bg-slate-800/80 md:p-8">
-                  <h2 className="font-display text-3xl font-bold text-slate-800 dark:text-white">Hubungi Chibi Craft</h2>
-                  <p className="mt-2 text-slate-600 dark:text-slate-300">Punya request warna atau nama? Kirim pesan di bawah ini.</p>
+              <section id="hubungi" className="mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-14">
+                <div className="fade-item rounded-[2rem] border border-pink-200/70 bg-white/85 p-6 shadow-lg dark:border-slate-700 dark:bg-slate-800/80 md:p-8">
+                  <div className="mb-5">
+                    <p className="text-sm font-bold uppercase tracking-wider text-pink-500">Hubungi Chibi Craft</p>
+                    <h2 className="font-display text-2xl font-bold text-slate-800 dark:text-white md:text-3xl">Kirim Note Langsung ke Gmail</h2>
+                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300 md:text-base">
+                      Isi pesanmu di bawah, lalu klik kirim untuk membuka Gmail compose dengan tujuan ke {contactEmail}.
+                    </p>
+                  </div>
 
-                  <form onSubmit={onSubmit} className="mt-6 grid gap-4">
-                    <input
-                      type="text"
-                      placeholder="Nama"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full rounded-2xl border border-pink-200 bg-white px-4 py-3 outline-none ring-pink-300 transition focus:ring-2 dark:border-slate-600 dark:bg-slate-900"
-                    />
-                    <input
-                      type="email"
-                      placeholder="Email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full rounded-2xl border border-pink-200 bg-white px-4 py-3 outline-none ring-pink-300 transition focus:ring-2 dark:border-slate-600 dark:bg-slate-900"
-                    />
-                    <textarea
-                      rows="4"
-                      placeholder="Pesan"
-                      value={form.message}
-                      onChange={(e) => setForm({ ...form, message: e.target.value })}
-                      className="w-full rounded-2xl border border-pink-200 bg-white px-4 py-3 outline-none ring-pink-300 transition focus:ring-2 dark:border-slate-600 dark:bg-slate-900"
-                    ></textarea>
+                  <form onSubmit={handleSendToGmail} className="space-y-4">
+                    <div>
+                      <label htmlFor="contactName" className="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">
+                        Nama
+                      </label>
+                      <input
+                        id="contactName"
+                        type="text"
+                        value={contactName}
+                        onChange={(e) => setContactName(e.target.value)}
+                        placeholder="Nama kamu"
+                        className="w-full rounded-xl border border-pink-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-pink-300 dark:focus:ring-pink-900/50"
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="contactNote" className="mb-1 block text-sm font-bold text-slate-700 dark:text-slate-200">
+                        Note
+                      </label>
+                      <textarea
+                        id="contactNote"
+                        value={contactNote}
+                        onChange={(e) => setContactNote(e.target.value)}
+                        required
+                        rows="5"
+                        placeholder="Tulis note kamu untuk Chibi Craft..."
+                        className="w-full rounded-xl border border-pink-200 bg-white px-4 py-2.5 text-sm text-slate-700 outline-none transition focus:border-pink-400 focus:ring-2 focus:ring-pink-200 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:focus:border-pink-300 dark:focus:ring-pink-900/50"
+                      ></textarea>
+                    </div>
+
                     <button
                       type="submit"
-                      className="w-fit rounded-full bg-pink-500 px-6 py-3 font-bold text-white transition hover:bg-pink-600"
+                      className="inline-flex items-center gap-2 rounded-full bg-pink-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-pink-600"
                     >
-                      Kirim Pesan
+                      Kirim ke Gmail
                     </button>
                   </form>
                 </div>
               </section>
+
             </main>
 
             <footer className="border-t border-white/50 bg-white/70 px-4 py-8 text-center text-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
